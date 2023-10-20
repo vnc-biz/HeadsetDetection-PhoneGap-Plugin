@@ -8,10 +8,13 @@ import org.apache.cordova.CordovaWebView;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.content.BroadcastReceiver;
+import android.bluetooth.BluetoothProfile;
+import android.bluetooth.BluetoothHeadset;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +40,8 @@ public class HeadsetDetection extends CordovaPlugin {
       mCachedWebView = webView;
       IntentFilter intentFilter = new IntentFilter();
       intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+      intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+
       this.receiver = new BroadcastReceiver() {
           @Override
           public void onReceive(Context context, Intent intent) {
@@ -54,6 +59,22 @@ public class HeadsetDetection extends CordovaPlugin {
                   default:
                       Log.d(LOG_TAG, "I have no idea what the headset state is");
                   }
+              }
+              if (intent.getAction().equals(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)) {
+                // mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteHeadsetRemoved();");
+                Log.d(LOG_TAG, "Bluetooth headset state changed intent: " + intent.toString());
+                Bundle extras = intent.getExtras();
+                Log.d(LOG_TAG, "Bluetooth headset state changed extra: " + extras.toString());
+                int state = intent.getIntExtra("android.bluetooth.profile.extra.STATE", -1);
+                switch (state) {
+                case 0:
+                    Log.d(LOG_TAG, "Headset is unplugged");
+                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteHeadsetRemoved();");
+                    break;
+                default:
+                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteHeadsetAdded();");
+                    Log.d(LOG_TAG, "I have no idea what the headset state is");
+                }
               }
           }
       };
