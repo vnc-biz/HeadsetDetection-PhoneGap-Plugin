@@ -14,7 +14,14 @@ var HeadsetDetection = {
   },
   remoteHeadsetAdded: function() {
     this.actionCallback && this.actionCallback('headsetAdded');
+  },
+  remoteBluetoothHeadsetRemoved: function() {
+    this.actionCallback && this.actionCallback('bluetoothHeadsetRemoved');
+  },
+  remoteBluetoothHeadsetAdded: function() {
+    this.actionCallback && this.actionCallback('bluetoothHeadsetAdded');
   }
+
 };
 
 module.exports = HeadsetDetection;

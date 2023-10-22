@@ -69,10 +69,10 @@ public class HeadsetDetection extends CordovaPlugin {
                 switch (state) {
                 case 0:
                     Log.d(LOG_TAG, "Headset is unplugged");
-                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteHeadsetRemoved();");
+                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteBluetoothHeadsetRemoved();");
                     break;
                 default:
-                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteHeadsetAdded();");
+                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteBluetoothHeadsetAdded();");
                     Log.d(LOG_TAG, "I have no idea what the headset state is");
                 }
               }
