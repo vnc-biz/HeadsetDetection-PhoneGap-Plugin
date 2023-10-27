@@ -20,6 +20,9 @@ var HeadsetDetection = {
   },
   remoteBluetoothHeadsetAdded: function() {
     this.actionCallback && this.actionCallback('bluetoothHeadsetAdded');
+  },
+  remoteBluetoothAdapterStarted: function() {
+    this.actionCallback && this.actionCallback('bluetoothAdapterStarted');
   }
 
 };

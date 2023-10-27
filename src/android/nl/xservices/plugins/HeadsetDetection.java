@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 import android.content.BroadcastReceiver;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothHeadset;
 
@@ -41,6 +42,7 @@ public class HeadsetDetection extends CordovaPlugin {
       IntentFilter intentFilter = new IntentFilter();
       intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
       intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+      intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
 
       this.receiver = new BroadcastReceiver() {
           @Override
@@ -71,10 +73,33 @@ public class HeadsetDetection extends CordovaPlugin {
                     Log.d(LOG_TAG, "Headset is unplugged");
                     mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteBluetoothHeadsetRemoved();");
                     break;
+                case 3:
+                    Log.d(LOG_TAG, "Headset is unplugged");
+                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteBluetoothHeadsetRemoved();");
+                    break;
                 default:
                     mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteBluetoothHeadsetAdded();");
                     Log.d(LOG_TAG, "I have no idea what the headset state is");
                 }
+              }
+              if (intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                Log.d(LOG_TAG, "BluetoothAdapter-headset state changed intent: " + intent.toString());
+                Bundle extras = intent.getExtras();
+                Log.d(LOG_TAG, "BluetoothAdapter-headset state changed extra: " + extras.toString());
+                int state = intent.getIntExtra("android.bluetooth.adapter.extra.STATE", -1);
+                switch (state) {
+                case 13:
+                    Log.d(LOG_TAG, "BluetoothAdapter turning off -> HeadsetRemoved");
+                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteBluetoothHeadsetRemoved();");
+                    break;
+                case 12:
+                    Log.d(LOG_TAG, "BluetoothAdapter turning on -> check Headset in 3 sec");
+                    mCachedWebView.sendJavascript("cordova.require('cordova-plugin-headsetdetection.HeadsetDetection').remoteBluetoothAdapterStarted();");
+                    break;
+                default:
+                    Log.d(LOG_TAG, "I have no idea what the headset state is");
+                }
+
               }
           }
       };
